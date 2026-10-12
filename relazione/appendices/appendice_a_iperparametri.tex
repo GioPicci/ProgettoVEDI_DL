@@ -1,0 +1,142 @@
+\chapter{Iperparametri Completi e Protocollo Sperimentale}
+\label{chap:appendice_iperparametri}
+
+Questa appendice raccoglie i parametri di configurazione e di addestramento usati per il classificatore DINOv3, per la pipeline deterministica WSOL, per il modello YOLOv8n distillato e per il protocollo di sample efficiency.
+
+\section{Classificatore DINOv3 (Linear Probing)}
+\label{sec:app_dino_params}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llcL}
+\toprule
+\textbf{Categoria} & \textbf{Iperparametro} & \textbf{Valore} & \textbf{Note e Rationale} \\
+\midrule
+\multirow{6}{*}{\textbf{Backbone}} 
+& Modello & \texttt{dinov3-vits16} & ViT-S/16 preaddestrato da Meta su LVD-1689M \\
+& Dimensione latente ($D$) & $384$ & Dimensione del token di embedding \\
+& Numero di strati ($L$) & $12$ & Blocchi sequenziali di Transformer Encoder \\
+& Teste attenzione ($h$) & $6$ & Dimensionalità per testa $d_k = 64$ \\
+& Dimensione patch ($P$) & $16 \times 16$ px & Risoluzione nativa del patch embedding \\
+& Stato pesi backbone & \textbf{Frozen} & Pesi congelati; nessun gradiente retropropagato \\
+\midrule
+\multirow{3}{*}{\textbf{Testa Classe}} 
+& Architettura & Dropout + Linear & Proiezione lineare diretta dal token CLS \\
+& Dropout rate & $0.3$ & Regolarizzazione per contrastare il co-adattamento \\
+& Numero classi output & $57$ & Corrispondenti ai 57 POI del dataset VEDI \\
+\midrule
+\multirow{4}{*}{\textbf{Dati \& Runtime}} 
+& Risoluzione ingresso & $384 \times 384$ px & Griglia discreta di patch pari a $24 \times 24$ (576 token) \\
+& Normalizzazione & Canali ImageNet & $\mu = [0.485, 0.456, 0.406]$, $\sigma = [0.229, 0.224, 0.225]$ \\
+& Batch size & $16$ & Campioni per iterazione di ottimizzazione \\
+& Data Augmentation & Flip + Color Jitter & Horizontal Flip ($p=0.5$); Jitter contrasto/luce ($p=0.5$) \\
+\midrule
+\multirow{5}{*}{\textbf{Ottimizzazione}} 
+& Ottimizzatore & AdamW & $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$ \\
+& Learning Rate ($\eta_0$) & $1 \times 10^{-4}$ & Ottimizzato su testa lineare \\
+& Weight Decay & $1 \times 10^{-4}$ & Penalizzazione $L_2$ per regolarizzazione pesi \\
+& Scheduler & Cosine Annealing & Decadimento cosinusoidale con riscaldamento \\
+& Epoche totali & $20$ & Miglior checkpoint all'epoca 13 (Val Acc $98.31\%$) \\
+\bottomrule
+\end{tabularx}
+\caption{Specifiche dettagliate del classificatore DINOv3 in regime di Linear Probing.}
+\label{tab:app_dino_params}
+\end{table}
+
+\section{Pipeline di Estrazione Bounding Box (WSOL)}
+\label{sec:app_wsol_params}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llcL}
+\toprule
+\textbf{Componente} & \textbf{Parametro} & \textbf{Valore} & \textbf{Funzione nel Sistema} \\
+\midrule
+\multirow{2}{*}{\textbf{Attribuzione}} 
+& Metodo Primario & \texttt{Linear-CAM} & Proiezione: $\text{ReLU}(\mathbf{w}_c^\top \mathbf{z}_{i,j})$ \\
+& Metodi Confronto & \texttt{dino\_attn}, \texttt{eigen}, \texttt{grad} & Utilizzati per il benchmark comparativo (Cap. 5) \\
+\midrule
+\multirow{4}{*}{\textbf{Preprocessing}} 
+& Risoluzione estrazione & $24 \times 24$ celle & Risoluzione nativa della griglia di patch ViT \\
+& Normalizzazione & Min-Max $[0.0, 1.0]$ & $\hat{M} = (M - \min M) / (\max M - \min M + \epsilon)$ \\
+& Interpolazione & Bicubica & Proiezione alla risoluzione nativa $(W, H)$ \\
+& Spazio Colore Output & Scala di grigi 8-bit & Mappatura nell'intervallo discreto $[0, 255]$ \\
+\midrule
+\multirow{3}{*}{\textbf{Binarizzazione}} 
+& Soglia \texttt{Linear-CAM} & $\tau = 0.45 \cdot \max$ & Taglio relativo proporzionale al picco \\
+& Soglia \texttt{DINO Attn} & Percentile $50^\circ$ & Taglio dinamico sulla mediana di densità \\
+& Area Minima & $5\%$ dell'immagine & Espansione isotropa contro collasso sub-risoluzione \\
+\midrule
+\multirow{3}{*}{\textbf{Morfologia}} 
+& Elemento Strutturante & Ellittico $7 \times 7$ px & Operazione di apertura: erosione e dilatazione \\
+& Criterio Contorno & Picco Assoluto & Selezione del poligono su $\arg\max \mathcal{H}(x, y)$ \\
+& Formato Box & AABB Normalizzato & Rettangolo asse-allineato $[c_x, c_y, w, h] \in [0, 1]^4$ \\
+\bottomrule
+\end{tabularx}
+\caption{Parametri operativi della pipeline deterministica WSOL.}
+\label{tab:app_wsol_params}
+\end{table}
+
+\section{Addestramento del Modello Studente (YOLOv8n Distillato)}
+\label{sec:app_yolo_params}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llcL}
+\toprule
+\textbf{Ambito} & \textbf{Iperparametro} & \textbf{Valore} & \textbf{Descrizione Operativa} \\
+\midrule
+\multirow{2}{*}{\textbf{Modello}} 
+& Architettura & \texttt{YOLOv8n} & Variante compatta (\textit{nano}), $\approx 3.2\text{ M}$ parametri \\
+& Inizializzazione & Pretrained COCO & Pesi di partenza ufficiali Ultralytics (\texttt{yolov8n.pt}) \\
+\midrule
+\multirow{5}{*}{\textbf{Dati \& Training}} 
+& Risoluzione ingresso & $640 \times 640$ px & Risoluzione standard YOLO per rilevamento fine \\
+& Batch size & $16$ & Esempi per iterazione \\
+& Numero classi ($nc$) & $57$ & Mapping coerente con la tassonomia naturale VEDI \\
+& Durata training & $100$ epoche & Epoche massime previste \\
+& Early Stopping & $20$ epoche & Arresto anticipato in caso di stallo su mAP \\
+\midrule
+\multirow{5}{*}{\textbf{Ottimizzazione}} 
+& Ottimizzatore & SGD & Discesa del gradiente stocastica con momentum \\
+& Momentum & $0.937$ & Coefficiente di inerzia dell'aggiornamento \\
+& Weight Decay & $5 \times 10^{-4}$ & Regolarizzazione $L_2$ sui pesi \\
+& Learning Rate iniziale & $0.01$ & Tasso iniziale di apprendimento (\texttt{lr0}) \\
+& Warmup & $3.0$ epoche & Transizione iniziale a gradiente controllato \\
+\midrule
+\multirow{4}{*}{\textbf{Augmentation}} 
+& Mosaic & $1.0$ (off a -10 ep.) & Composizione di 4 fotogrammi \\
+& Horizontal Flip & $0.5$ & Probabilità di specchiatura orizzontale \\
+& Variazione Scala & $\pm 50\%$ & Alterazione casuale delle dimensioni \\
+& Perturbazione HSV & $h=0.015, s=0.7, v=0.4$ & Fluttuazioni cromatiche casuali \\
+\bottomrule
+\end{tabularx}
+\caption{Iperparametri completi di addestramento per YOLOv8n distillato.}
+\label{tab:app_yolo_params}
+\end{table}
+
+\section{Protocollo Sperimentale di Sample Efficiency}
+\label{sec:app_sample_params}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lcL}
+\toprule
+\textbf{Parametro} & \textbf{Valore} & \textbf{Rationale Sperimentale} \\
+\midrule
+\textbf{Frazioni di Supervisione ($\mathcal{F}$)} & $\{1\%, 2\%, 5\%, 10\%, 20\%, 40\%, 100\%\}$ & Scala logaritmica/geometrica asintotica \\
+\textbf{Criterio di Campionamento} & Stratificato per fotogrammi & Rispecchia il costo reale del tempo umano \\
+\textbf{Semi Casuali ($< 100\%$)} & $\{42, 1337, 2026\}$ (3 seed) & Controllo rigoroso della varianza stocastica \\
+\textbf{Disegno Sperimentale} & A blocchi appaiati (\textit{Paired}) & Medesimi 3 seed per tutte le frazioni \\
+\textbf{Partizione Validazione} & $15\%$ del subset estratto & Riservato unicamente a early stopping \\
+\textbf{Pazienza Early Stopping} & $15$ epoche & Gestione della rumorosità su micro-dataset \\
+\textbf{Valutazione Test Set} & Miglior checkpoint & Valutazione su $5.462$ immagini indipendenti \\
+\bottomrule
+\end{tabularx}
+\caption{Parametri di controllo del benchmark comparativo di Sample Efficiency.}
+\label{tab:app_sample_params}
+\end{table}

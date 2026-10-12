@@ -1,0 +1,69 @@
+SAMPLE_RATIO = 0.25
+STRICTNESS = 0.45
+SEED = 42
+
+==============================================================================
+                TABELLA PRESTAZIONI DETTAGLIATE PER CLASSE
+==============================================================================
+ID   | NOME CLASSE                      | GT BOXES | mAP@50:95    | RECALL
+------------------------------------------------------------------------------
+21   | 5.5_Cupola                       | 250      | 0.00%        | 0.00%
+23   | 5.7_S.Agata                      | 250      | 0.00%        | 0.00%
+24   | 5.8_S.Scolastica                 | 250      | 0.00%        | 0.00%
+31   | 6.5_BassorilieviMancanti         | 421      | 0.00%        | 0.00%
+56   | 9.3_PergolatoNovizi              | 226      | 0.00%        | 0.00%
+1    | 2.1_RampaS.Nicola                | 231      | 0.55%        | 5.06%
+18   | 5.2_PortaIngressoMuseoFabbrica   | 250      | 1.55%        | 8.72%
+53   | 8.11_BustoPietroTacchini         | 244      | 6.54%        | 22.62%
+27   | 6.1_QuadroSantoMazzarino         | 225      | 6.59%        | 19.11%
+49   | 8.7_Latrina                      | 196      | 13.26%       | 32.60%
+46   | 8.4_ScalaCucina                  | 232      | 17.88%       | 37.63%
+9    | 3.7_TracciaPortone               | 249      | 18.14%       | 33.57%
+28   | 6.2_Affresco                     | 230      | 18.61%       | 32.30%
+43   | 8.1_Doccione                     | 235      | 19.74%       | 35.62%
+32   | 6.6_LavamaniSx                   | 244      | 19.93%       | 34.22%
+17   | 5.1_PortaAulaS.Mazzarino         | 236      | 22.03%       | 41.53%
+55   | 9.2_TraccePalestra               | 250      | 27.24%       | 43.80%
+26   | 5.10_BustoVaccarini              | 248      | 30.48%       | 52.82%
+44   | 8.2_VanoRaccoltaCenere           | 240      | 31.65%       | 50.17%
+4    | 3.2_ChiostroLevante              | 246      | 32.64%       | 49.15%
+13   | 3.11_CorridoioOrologio           | 223      | 34.40%       | 53.05%
+19   | 5.3_PortaAntirefettorio          | 250      | 39.01%       | 52.20%
+29   | 6.3_PavimentoOriginale           | 240      | 39.08%       | 49.42%
+20   | 5.4_PortaIngressoRef.Piccolo     | 250      | 40.46%       | 51.88%
+11   | 3.9_CorridoiodiLevante           | 222      | 41.40%       | 60.63%
+14   | 4.1_Quadro                       | 250      | 42.58%       | 56.60%
+52   | 8.10_Cisterna                    | 220      | 42.86%       | 59.86%
+7    | 3.5_FinestraChiostroLevante      | 228      | 43.97%       | 57.63%
+15   | 4.2_PavimentoOrig.Altare         | 248      | 46.22%       | 55.20%
+36   | 7.1_Edicola                      | 248      | 46.65%       | 63.15%
+6    | 3.4_Affresco                     | 246      | 48.82%       | 65.53%
+51   | 8.9_Pozzo                        | 156      | 50.52%       | 67.31%
+34   | 6.8_TavoloRelatori               | 250      | 52.06%       | 68.36%
+41   | 7.6_Scala                        | 250      | 52.36%       | 62.96%
+25   | 5.9_ArcoconFirma                 | 200      | 52.69%       | 67.50%
+0    | 1.1_Ingresso                     | 230      | 52.87%       | 71.48%
+8    | 3.6_PortaCorodiNotte             | 225      | 53.15%       | 69.51%
+5    | 3.3_Plastico                     | 249      | 53.22%       | 67.79%
+54   | 9.1_NicchiaePavimento            | 250      | 57.60%       | 73.60%
+33   | 6.7_LavamaniDx                   | 244      | 60.14%       | 68.44%
+10   | 3.8_StanzaAbate                  | 237      | 64.13%       | 74.94%
+48   | 8.6_Ghiacciaia                   | 199      | 66.50%       | 76.48%
+3    | 3.1_SimboloTreBiglie             | 250      | 66.67%       | 75.76%
+50   | 8.8_OssaeScarti                  | 250      | 66.69%       | 78.04%
+47   | 8.5_CucinaProvv                  | 250      | 73.55%       | 81.84%
+2    | 2.2_RampaS.Benedetto             | 229      | 73.57%       | 85.28%
+39   | 7.4_Passavivande                 | 249      | 74.40%       | 82.49%
+16   | 4.3_BalconeChiesa                | 228      | 74.62%       | 87.54%
+40   | 7.5_AperturaPavimento            | 248      | 77.59%       | 85.08%
+42   | 7.7_SalaMetereologica            | 229      | 77.91%       | 89.43%
+22   | 5.6_AperturaPavimento            | 250      | 79.77%       | 86.08%
+12   | 3.10_CorridoioCorodiNotte        | 250      | 79.93%       | 87.24%
+30   | 6.4_PavimentoRestaurato          | 250      | 87.95%       | 91.20%
+35   | 6.9_Poltrone                     | 250      | 88.27%       | 93.28%
+45   | 8.3_SalaRossa                    | 230      | 89.07%       | 95.87%
+37   | 7.2_PavimentoA                   | 250      | 89.33%       | 92.72%
+38   | 7.3_PavimentoB                   | 250      | 95.02%       | 96.52%
+==============================================================================
+ METRICHE GLOBALI -> mAP@50: 66.23% | mAP@50:95 (COCO): 44.59%
+==============================================================================

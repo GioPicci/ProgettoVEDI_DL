@@ -1,0 +1,2 @@
+Usare modello che faccia grounding sull'attention di DINOv3. Così in teoria se lo mettessi sopra, potrei fare modello+oggetto da riconoscere e fare detection di oggetti multipli.
+Ma se linear cam si basa sul prodotto tra vettore dei pesi della classe predetta (testa linear) e ogni token spaziale di DINOv3, se definissi un approccio a cascata (macroarea + POI) e labeling invece che classificazione, funzionerebbe meglio?

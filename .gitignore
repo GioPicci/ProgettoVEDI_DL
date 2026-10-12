@@ -1,0 +1,82 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# IDE & Editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Large datasets & raw data
+data/
+*.zip
+*.tar
+*.tar.gz
+*.iso
+
+# Model weights & checkpoints (>100MB / binary weights)
+*.pth
+*.pth.bak
+*.pt
+*.onnx
+*.engine
+*.bin
+
+# YOLO / Training runs & logs
+runs/
+yolo/runs_*/
+yolo/visual_inspection_samples/
+
+# Generated inspection & debug visual samples
+visual_sample_dino_vs_gt/
+script/annotation_check/
+annotated_samples/
+
+# LaTeX build artifacts (in relazione/ or anywhere)
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Local scratch / system files
+Thumbs.db

@@ -1,0 +1,123 @@
+\chapter{Il Dataset UNICT-VEDI POI e Sanitizzazione delle Annotazioni}
+\label{chap:dataset}
+
+\section{Struttura e Origine del Dataset UNICT-VEDI POI}
+\label{sec:dataset_struttura}
+
+\subsection{Origine scientifica e contesto applicativo}
+Il benchmark utilizzato è il dataset UNICT-VEDI POI~\cite{ragusa2019egocentric}, curato dall'IPLab dell'Università di Catania all'interno del progetto VEDI. I dati appartengono all'ambito della \textit{First-Person Vision} (FPV) nei beni culturali: i video sono stati acquisiti tramite videocamere indossate da visitatori all'interno del Monastero dei Benedettini di San Nicolò l'Arena a Catania.
+
+Il compito applicativo consiste nell'individuare automaticamente i punti di interesse (POI) osservati dall'utente (\textit{attended objects}). Il corpus comprende affreschi, tele, sculture, portali ed elementi architettonici, con le caratteristiche sintetiche riportate nella Tabella~\ref{tab:dataset_proprieta}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lL}
+\toprule
+\textbf{Proprietà del Dataset} & \textbf{Valore / Dettaglio Operativo} \\
+\midrule
+\textbf{Sito monumentale} & Monastero dei Benedettini di San Nicolò l'Arena (Catania) \\
+\textbf{Tipologia dati} & Fotogrammi da video egocentrici ($1216 \times 684$ pixel) \\
+\textbf{Numero di classi POI} & 57 classi distribuite su 9 macro-ambienti storici \\
+\textbf{Volume Training Set} & $67.050$ immagini (organizzate per cartella di classe) \\
+\textbf{Volume Test Set} & $5.462$ immagini (distribuite su 7 sessioni continue di visita) \\
+\textbf{Formato annotazioni} & Coordinate bounding box normalizzate ($x_c, y_c, w, h$) \\
+\bottomrule
+\end{tabularx}
+\caption{Specifiche strutturali del dataset egocentrico UNICT-VEDI POI.}
+\label{tab:dataset_proprieta}
+\end{table}
+
+\subsection{Tassonomia delle classi e articolazione spaziale}
+I 57 POI sono distribuiti nei 9 macro-ambienti del monastero (Tabella~\ref{tab:tassonomia_aree}). L'elenco integrale classe per classe con le aree medie è riportato in Appendice~\ref{chap:appendice_classi}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{l c L}
+\toprule
+\textbf{Macro-Ambiente Storico} & \textbf{POI ($N$)} & \textbf{Esempi Rappresentativi} \\
+\midrule
+\textbf{1. Ingresso Monumentale} & 1 & Ingresso \\
+\textbf{2. Scalone Monumentale} & 2 & Rampa S. Nicola, Rampa S. Benedetto \\
+\textbf{3. Chiostro e Corridoi} & 11 & Chiostro Levante, Affresco, Traccia Portone, Corridoi \\
+\textbf{4. Cantoria e Chiesa} & 3 & Quadro, Pavimento Orig. Altare, Balcone Chiesa \\
+\textbf{5. Antirefettorio e Museo} & 10 & Portali, Cupola, S. Agata, S. Scolastica, Busto Vaccarini \\
+\textbf{6. Coro di Notte e Aula} & 9 & Quadro Mazzarino, Bassorilievi Mancanti, Lavamani, Poltrone \\
+\textbf{7. Refettorio Piccolo} & 7 & Edicola, Pavimenti A/B, Passavivande, Scala, Sala Metereologica \\
+\textbf{8. Cucine e Sotterranei} & 11 & Doccione, Cucine, Ghiacciaia, Cisterna, Busto Tacchini \\
+\textbf{9. Giardino dei Novizi} & 3 & Nicchia e Pavimento, Tracce Palestra, Pergolato \\
+\midrule
+\textbf{Totale Complesso} & \textbf{57} & Tassonomia completa dettagliata in Appendice~\ref{chap:appendice_classi} \\
+\bottomrule
+\end{tabularx}
+\caption{Distribuzione delle 57 classi di POI nei 9 macro-ambienti monumentali.}
+\label{tab:tassonomia_aree}
+\end{table}
+
+\subsection{Organizzazione tra Training e Test Set}
+L'organizzazione tra addestramento e test presenta una differenza strutturale importante:
+\begin{itemize}
+    \item \textbf{Training set ($67.050$ immagini)}: le immagini sono raggruppate in 57 cartelle, una per ciascuna classe di POI.
+    \item \textbf{Test set ($5.462$ immagini)}: i fotogrammi provengono da 7 sessioni continue di visita a passo d'uomo (\texttt{Test1}--\texttt{Test7}). Di questi, $3.673$ fotogrammi presentano annotazioni di ground truth con coordinate geometriche; i rimanenti corrispondono a momenti di passaggio tra ambienti privi di soggetti catalogati.
+\end{itemize}
+
+\section{Sanitizzazione delle Annotazioni del Dataset}
+\label{sec:dataset_sanitizzazione}
+L'analisi preliminare dei file di etichetta in formato YOLO ($[x_c, y_c, w, h] \in [0, 1]^4$) ha evidenziato anomalie corrette tramite tre passaggi di pulizia:
+\begin{enumerate}
+    \item \textbf{Normalizzazione delle coordinate}: i riquadri salvati con coordinate assolute in pixel (valori maggiori di $1.5$) sono stati ricondotti all'intervallo $[0, 1]$ dividendo per le dimensioni d'origine del fotogramma ($W=1216, H=684$).
+    \item \textbf{Troncamento ai bordi (\textit{clamping})}: le coordinate esterne all'immagine sono state tagliate sull'intervallo $[0.0, 1.0]$, ponendo $x_{\min}^{\text{clamp}} = \max(0.0, \min(1.0, x_{\min}))$ e analogamente per gli altri tre vertici.
+    \item \textbf{Rimozione dei riquadri degeneri}: sono state rimosse le annotazioni con larghezza o altezza inferiori a $\epsilon = 10^{-3}$, per evitare divergenze numeriche nel calcolo dell'Intersection over Union.
+\end{enumerate}
+
+\subsection{Trattamento dei fotogrammi privi di bounding box: Convenzione Full-Frame}
+Nel set di addestramento, $3.106$ fotogrammi (circa il $4.6\%$ del totale) sono privi di file di etichetta. Seguendo la documentazione ufficiale del dataset rilasciata dagli autori:
+\begin{quote}
+    \textit{<<Some folders have not the two *.csv files, in this case for each related RGB frame you have to consider a bounding box which contains the whole frame.>>}
+\end{quote}
+è stata assegnata a queste immagini la classe associata alla cartella e un riquadro esteso all'intero fotogramma ($[x_c = 0.5, y_c = 0.5, w = 1.0, h = 1.0]$). Questa scelta modella le situazioni in cui l'ambiente o la parete monumentale occupa completamente la vista dell'utente.
+
+\section{Analisi dell'Area Media per Classe e Definizione dei Tier Dimensionali}
+\label{sec:dataset_tiers}
+
+\subsection{Motivazione metodologica}
+Le dimensioni apparenti dei soggetti nel dataset variano da piccoli dettagli scultorei a lunghi corridoi. Valutare i modelli solo tramite la metrica mAP aggregata nasconderebbe differenze marcate nel comportamento del Vision Transformer a scale spaziali diverse.
+
+\paragraph{Nota metodologica sui Tier.}
+La ripartizione in fasce dimensionali (tier) non appartiene alla specifica originaria del dataset VEDI: è stata introdotta in questo studio per analizzare il rendimento dei metodi in funzione dell'ingombro relativo dell'oggetto.
+
+\subsection{Formulazione e distribuzione nei 4 tier}
+I tier sono calcolati a livello di classe mediante l'area media normalizzata $\bar{A}_c$ occupata dal riquadro di ground truth su tutte le occorrenze:
+\begin{equation}
+    \bar{A}_c = \frac{1}{N_c} \sum_{i=1}^{N_c} (w_{c,i} \cdot h_{c,i}) \in [0.0, 1.0]
+\end{equation}
+Le 57 classi sono state quindi ripartite in quattro fasce (Tabella~\ref{tab:distribuzione_tiers}).
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabularx}{\textwidth}{lcccccX}
+\toprule
+\textbf{Tier} & \textbf{Soglia ($\bar{A}_c$)} & \textbf{Classi} & \textbf{Quota} & \textbf{Area Media} & \textbf{Range} & \textbf{Esempi} \\
+\midrule
+\textbf{Tiny} & $\le 0.10$ & \textbf{4} & $7.0\%$ & \textbf{4.97\%} & $3.1\% - 7.2\%$ & Bassorilievi, S. Agata \\
+\textbf{Small} & $0.10 - 0.30$ & \textbf{3} & $5.3\%$ & \textbf{26.27\%} & $21.9\% - 29.7\%$ & Quadro Mazzarino, Lavamani \\
+\textbf{Macro} & $0.30 - 0.80$ & \textbf{27} & $47.4\%$ & \textbf{61.19\%} & $31.5\% - 78.6\%$ & Portali, affreschi, altari \\
+\textbf{Full-Frame} & $\ge 0.80$ & \textbf{23} & $40.3\%$ & \textbf{93.09\%} & $81.3\% - 99.8\%$ & Corridoi, scalinate, sale \\
+\midrule
+\textbf{Totale} & — & \textbf{57} & $100\%$ & \textbf{70.75\%} & $3.1\% - 99.8\%$ & — \\
+\bottomrule
+\end{tabularx}
+\caption{Segmentazione delle 57 classi del dataset UNICT-VEDI POI nei quattro tier dimensionali analitici (in Area Media e Range sono riportate le quote percentuali dell'inquadratura).}
+\label{tab:distribuzione_tiers}
+\end{table}
+
+\subsection{Caratteristiche dei singoli tier}
+\begin{enumerate}
+    \item \textbf{Tier Tiny (4 classi, area $\bar{A}_c \le 0.10$)}: elementi circoscritti (Bassorilievi, S.~Agata, S.~Scolastica, Cupola). Costituiscono il caso più critico per la localizzazione debole, sia per la discretizzazione spaziale a patch, sia per la predominanza visiva della muratura circostante.
+    \item \textbf{Tier Small (3 classi, $0.10 < \bar{A}_c < 0.30$)}: soggetti delimitati (Quadro Mazzarino, Lavamani, Busto Tacchini). Con lo sfondo che copre tra il $70\%$ e il $90\%$ della scena, le mappe di attivazione tendono a disperdersi sui muri d'appoggio.
+    \item \textbf{Tier Macro (27 classi, $0.30 \le \bar{A}_c < 0.80$)}: il gruppo più numeroso ($47.4\%$). Raccoglie portali, affreschi e scalinate in cui il soggetto riempie buona parte dell'inquadratura ma conserva contorni netti rispetto all'ambiente.
+    \item \textbf{Tier Full-Frame (23 classi, $\bar{A}_c \ge 0.80$)}: corridoi e sale ampie con copertura media del $93.1\%$. In questa fascia il compito geometrico coincide nei fatti con la classificazione dell'ambiente, dato che il riquadro corretto coincide quasi per intero con l'immagine.
+\end{enumerate}

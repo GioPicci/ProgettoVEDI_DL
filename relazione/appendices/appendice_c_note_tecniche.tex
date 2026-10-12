@@ -1,0 +1,59 @@
+\chapter{Ambiente di Esecuzione, Note Tecniche e Riproducibilità}
+\label{chap:appendice_note_tecniche}
+
+Questa appendice descrive l'ambiente software, l'hardware impiegato e le impostazioni adottate per assicurare la riproducibilità degli esperimenti.
+
+\section{Stack Software e Librerie di Riferimento}
+\label{sec:app_software}
+Il codice è sviluppato in Python 3.12 all'interno di un ambiente virtuale isolato. I principali framework e librerie scientifiche utilizzati sono:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lcL}
+\toprule
+\textbf{Libreria / Framework} & \textbf{Versione} & \textbf{Funzione Primaria nella Pipeline} \\
+\midrule
+\textbf{PyTorch} & \texttt{2.1+} (CUDA 12.x) & Computazione GPU, autograd e training DINO \\
+\textbf{HF Transformers} & \texttt{5.x} & Modello preaddestrato \texttt{dinov3-vits16-pretrain} \\
+\textbf{Ultralytics} & \texttt{8.x} & Addestramento e validazione modelli YOLOv8 \\
+\textbf{OpenCV (\texttt{cv2})} & \texttt{4.x} & Sovracampionamento bicubico, binarizzazione, morfologia \\
+\textbf{Pillow (\texttt{PIL})} & \texttt{10.x} & Decodifica ed elaborazione delle immagini RGB \\
+\textbf{NumPy \& SciPy} & \texttt{1.26+} / \texttt{1.12+} & Manipolazioni tensoriali, percentili e SVD \\
+\textbf{Torchmetrics} & \texttt{1.x} & Metriche di classificazione (Top-1, Top-5, Macro F1) \\
+\textbf{Pandas \& Matplotlib} & \texttt{2.x} / \texttt{3.8+} & Aggregazione statistica e rendering grafici \\
+\bottomrule
+\end{tabularx}
+\caption{Ecosistema software e framework scientifici impiegati.}
+\label{tab:app_software}
+\end{table}
+
+\section{Risorse Hardware e Accelerazione di Calcolo}
+\label{sec:app_hardware}
+Gli esperimenti sono stati condotti su una workstation locale:
+\begin{itemize}
+    \item \textbf{Unità di Elaborazione Grafica (GPU)}: NVIDIA GeForce RTX 2060 con 6 GB di VRAM (GDDR6).
+    \item \textbf{Accelerazione Numerica}: Driver NVIDIA compatibili con CUDA 12 e librerie cuDNN per l'esecuzione dei blocchi convoluzionali e dei moduli di attenzione.
+    \item \textbf{Precisione Mista (AMP)}: Negli addestramenti di YOLOv8n è stata attivata l'\textit{Automatic Mixed Precision} (FP16), riducendo l'occupazione di memoria video e accelerando le epoche senza instabilità numeriche nel calcolo delle perdite.
+\end{itemize}
+
+\section{Protocollo di Riproducibilità e Controllo del Determinismo}
+\label{sec:app_riproducibilita}
+Per rendere replicabili le prove sperimentali:
+\begin{enumerate}
+    \item \textbf{Semi pseudocasuali fissati}: le componenti stocastiche sono state inizializzate con semi prestabiliti:
+    \begin{itemize}
+        \item Addestramento del classificatore DINOv3 e della YOLO distillata: $\text{seed} = 42$.
+        \item Benchmark di Sample Efficiency: esecuzione sistematica sui tre semi $\text{seed} \in \{42, 1337, 2026\}$, calcolando media e deviazione standard ($\mu \pm \sigma$).
+    \end{itemize}
+    \item \textbf{Determinismo delle primitive CUDA}: impostazione di \texttt{cudnn.deterministic = True} in PyTorch per limitare la non-determinatezza degli algoritmi di convoluzione.
+    \item \textbf{Partizionamento dei dati}: il criterio 80/20 per classe (campione a validazione se $i \pmod 5 == 0$) è stato applicato in modo identico sia al training del classificatore DINOv3 sia alla distillazione di YOLOv8n, garantendo il completo allineamento tra i rispettivi insiemi di validazione.
+\end{enumerate}
+
+\section{Condizioni di Licenza e Conformità dei Dati}
+\label{sec:app_licenze}
+\begin{itemize}
+    \item \textbf{UNICT-VEDI POI Dataset}: rilasciato dall'Image Processing Laboratory (IPLab) dell'Università di Catania per finalità di ricerca e sperimentazione scientifica.
+    \item \textbf{Pesi DINOv3}: rilasciati da Meta AI Research sotto licenza di ricerca.
+    \item \textbf{Ultralytics YOLO}: concesso sotto licenza AGPL-3.0.
+\end{itemize}

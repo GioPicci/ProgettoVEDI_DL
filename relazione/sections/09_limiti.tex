@@ -1,0 +1,22 @@
+\chapter{Limiti della Metodologia}
+\label{chap:limiti}
+
+\section{Assunzione di Singola Istanza per Immagine}
+\label{sec:limiti_istanza}
+L'algoritmo di estrazione dei riquadri assume che in ogni fotogramma compaia una sola istanza del soggetto: l'ancoraggio al picco globale ($\arg\max \mathcal{H}$) seleziona unicamente il contorno con intensità massima, ignorando eventuali occorrenze secondarie. Quando compaiono più elementi omologhi nella stessa inquadratura (come i lavamani gemelli \texttt{6.6} e \texttt{6.7}, o le poltrone \texttt{6.9}), il sistema identifica solo l'istanza più evidente oppure unisce gli oggetti in un unico grande rettangolo se l'apertura morfologica non li disaccoppia.
+
+\section{Bias Contestuale e Disallineamento Discriminativo}
+\label{sec:limiti_bias}
+L'addestramento con etichette a livello di immagine sviluppa, negli ambienti chiusi del monastero, un evidente bias di contesto. La perdita di Cross-Entropy valorizza elementi murari fissi di ampia superficie (volte, archi e pareti decorate), spingendo il massimo di calore al di fuori dell'opera da rilevare (\textit{attribution leakage}): $(x^*, y^*) = \arg\max \mathcal{H}(x, y) \notin \text{BBox}_{\text{GT}}$. Questo fenomeno azzera la localizzazione sui soggetti di scala ridotta (Tier Tiny), nonostante il modello riconosca la classe dell'immagine con precisione.
+
+\section{Rigidità della Soglia Costante}
+\label{sec:limiti_soglia}
+La soglia proporzionale fissa ($\tau = 0.45 \cdot \max$) costituisce un compromesso rigido: efficace nei contesti a contrasto netto, tende a escludere le parti periferiche dei soggetti a sfumatura continua, sottostimando la reale ampiezza del perimetro rispetto alle annotazioni umane. L'assenza di un criterio dinamico basato sull'entropia locale delle attivazioni limita la precisione dell'estrazione.
+
+\section{Approssimazione Rettangolare di Maschere Irregolari}
+\label{sec:limiti_rettangolo}
+Le mappe di salienza di DINOv3 producono sagome continue e irregolari. L'obbligo di circoscrivere la regione con rettangoli allineati agli assi (AABB), imposto dal formato di YOLO, include porzioni cospicue di sfondo nei soggetti orientati in diagonale o asimmetrici (scalinate, archi prospettici). Questa approssimazione penalizza le valutazioni a soglie IoU più severe (mAP@75 e mAP@50:95, pari al $25.84\%$).
+
+\section{Domain Shift Dinamico tra Training e Test}
+\label{sec:limiti_domain_shift}
+Il dataset presenta una differenza cinematica tra le partizioni: il set di addestramento è organizzato per cartelle di classe con inquadrature stabili, mentre il test set deriva da 7 sessioni video continue a passo d'uomo (\texttt{Test1}--\texttt{Test7}) soggette a rotazioni rapide, occlusioni parziali e sfocature da movimento (\textit{motion blur}). Il teacher DINOv3 lavora su immagini statiche isolate, generando pseudo-label che risentono delle fluttuazioni dinamiche tipiche delle riprese reali.

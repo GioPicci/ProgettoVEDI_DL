@@ -1,0 +1,19 @@
+{
+    "version": "v2",
+    "model_name": "facebook/dinov3-vits16-pretrain-lvd1689m",
+    "checkpoint_evaluated": "C:\\Users\\Workstation\\PycharmProjects\\ProgettoVEDI_DL\\checkpoints_classification_v2\\best_model.pth",
+    "test_loss": 2.1615462294229637,
+    "test_accuracy": 0.4904796779155731,
+    "test_f1_macro": 0.5552978515625,
+    "test_f1_weighted": 0.44951674342155457,
+    "num_test_samples": 5462,
+    "num_classes": 58,
+    "background_id": 57,
+    "background_stats": {
+        "true_background": 1789,
+        "predicted_background": 166,
+        "background_recall": 0.08328675478696823,
+        "background_missed_as_poi": 1640,
+        "poi_missed_as_background": 17
+    }
+}

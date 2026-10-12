@@ -1,0 +1,41 @@
+\chapter{Introduzione e Definizione del Problema}
+\label{chap:introduzione}
+
+\section{Contesto Applicativo: Visione Egocentrica nei Beni Culturali}
+\label{sec:intro_contesto}
+La \textit{First-Person Vision} (FPV), o visione egocentrica, cattura flussi visivi tramite dispositivi indossabili (\textit{wearable cameras} o visori) dal punto di vista prospettico del visitatore. Nei contesti museali o monumentali, individuare in tempo reale i punti di interesse (POI) osservati dall'utente (\textit{attended objects}) è il passo preliminare per costruire sistemi interattivi di guida e fruizione culturale.
+
+Come benchmark di riferimento viene adottato il dataset UNICT-VEDI POI~\cite{ragusa2019egocentric}, acquisito nel complesso del Monastero dei Benedettini di San Nicolò l'Arena a Catania. Il corpus raccoglie 57 classi di elementi storici e architettonici (dipinti, affreschi, portali e ambienti) ripresi durante percorsi di visita continui.
+
+\section{L'Asimmetria dei Costi di Annotazione}
+\label{sec:intro_asimmetria}
+I modelli supervisionati di object detection richiedono grandi quantità di riquadri di delimitazione (\textit{bounding box}) tracciati a mano. Nei beni culturali questo comporta un netto sbilanciamento nei costi di etichettatura:
+\begin{itemize}
+    \item \textbf{Supervisione a livello di immagine (\textit{image-level})}: annotare la presenza del POI nella scena richiede circa $1 - 2$ secondi per fotogramma ed è spesso ricavabile da log di visita o sensori di prossimità.
+    \item \textbf{Supervisione geometrica (\textit{bounding box})}: delimitare i contorni di opere asimmetriche o parzialmente occluse richiede $20 - 30$ secondi per fotogramma, diventando presto insostenibile su raccolte video di decine di migliaia di fotogrammi.
+\end{itemize}
+Questo divario di costi motiva l'interesse per la \textit{Weakly-Supervised Object Localization} (WSOL)~\cite{choe2020evaluating,zhang2018adversarial,bilgi2021weakly}, che mira a ricavare la posizione 2D degli oggetti partendo dalle sole etichette di presenza nell'immagine.
+
+\section{Domanda di Ricerca}
+\label{sec:intro_domanda}
+La letteratura su WSOL si concentra quasi sempre su metriche isolate di localizzazione (come mAP@50 o MaxBoxAcc). Sul piano pratico ed economico resta però aperta una domanda diretta:
+\begin{quote}
+    \centering
+    \textit{<<A quale frazione di dati annotati manualmente con bounding box equivale un sistema di localizzazione addestrato senza alcuna annotazione geometrica supervisionata?>>}
+\end{quote}
+Nel presente lavoro si misura la \textit{sample efficiency} della supervisione debole, determinando a quale quota percentuale di ground truth manuale corrisponda il modello distillato e quanta frazione della capacità del rilevatore pienamente supervisionato (l'oracolo al $100\%$) venga effettivamente preservata.
+
+\section{Panoramica della Pipeline Proposta}
+\label{sec:intro_pipeline}
+Per rispondere alla domanda, la sperimentazione è stata organizzata in cinque fasi:
+\begin{enumerate}
+    \item \textbf{Modello teacher (DINOv3)}: addestramento di una testa lineare su backbone Vision Transformer congelato (ViT-S/16)~\cite{caron2021emerging,oquab2023dinov2,simeoni2025dinov3}, mantenendo intatte le feature di auto-segmentazione spaziale.
+    \item \textbf{Attribuzione spaziale (WSOL)}: estrazione delle mappe di salienza con Linear-CAM e confronto comparativo con \textit{DINO Self-Attention}, \textit{Eigen-CAM}~\cite{muhammad2020eigen} e \textit{Grad-CAM}~\cite{selvaraju2017grad}.
+    \item \textbf{Generazione di pseudo-label}: trasformazione deterministica delle heatmap in riquadri in formato YOLO tramite sogliatura proporzionale, apertura morfologica ed estrazione del poligono sul picco di attivazione.
+    \item \textbf{Distillazione dello studente (YOLOv8n)}: addestramento del rilevatore leggero YOLOv8n ($3.2\text{M}$ parametri)~\cite{jocher2023ultralytics} sull'insieme di immagini etichettato automaticamente dal teacher.
+    \item \textbf{Valutazione di sample efficiency}: confronto dello studente distillato con 19 baseline supervisionate addestrate su 7 quote di ground truth ($1\% \dots 100\%$) su 3 seed casuali, valutate sul test set ufficiale.
+\end{enumerate}
+
+\section{Organizzazione del Documento}
+\label{sec:intro_struttura}
+Il documento è organizzato come segue: il Capitolo~\ref{chap:dataset} descrive il dataset VEDI, la pulizia dei dati e la suddivisione in tier dimensionali; il Capitolo~\ref{chap:architettura} presenta l'architettura DINOv3 e la derivazione di Linear-CAM; il Capitolo~\ref{chap:training_classificatore} riporta i risultati di classificazione e la distribuzione degli errori nelle sale; il Capitolo~\ref{chap:wsol} confronta i 4 metodi CAM; il Capitolo~\ref{chap:distillazione} illustra la distillazione in YOLOv8n; il Capitolo~\ref{chap:sample_efficiency} descrive il protocollo di sample efficiency; il Capitolo~\ref{chap:risultati} analizza il punto di pareggio, la ritenzione di capacità e il bias contestuale sulle classi Tiny; i Capitoli~\ref{chap:limiti} e~\ref{chap:conclusioni} discutono i limiti riscontrati, le conclusioni e le possibili estensioni. Le Appendici~\ref{chap:appendice_iperparametri}--\ref{chap:appendice_note_tecniche} contengono i parametri completi, la tassonomia delle classi e le note di riproducibilità.

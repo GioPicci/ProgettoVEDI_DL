@@ -1,0 +1,23 @@
+\chapter{Conclusioni e Sviluppi Futuri}
+\label{chap:conclusioni}
+
+\section{Risposta alla Domanda di Ricerca}
+\label{sec:conc_risposta}
+In questo lavoro è stato misurato il valore pratico delle annotazioni manuali sostituite da una pipeline di distillazione debolmente supervisionata guidata da DINOv3.
+
+I test condotti sul dataset UNICT-VEDI POI indicano tre risultati principali:
+\begin{enumerate}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
+    \item \textbf{Punto di pareggio ($1.43\%$ di etichette manuali)}: lo studente YOLOv8n addestrato sulle mappe Linear-CAM ottiene il $37.39\%$ di mAP@50, superando la baseline supervisionata all'$1\%$ ($34.33\%$) e raggiungendo un punto di pareggio stimato all'$1.43\%$ di annotazioni umane.
+    \item \textbf{Ritenzione di capacità ($61.79\%$ dell'oracolo)}: rispetto al limite superiore dell'oracolo supervisionato al $100\%$ ($60.51\%$), il modello distillato recupera oltre tre quinti delle prestazioni complessive. Nel Tier Macro (26 classi complesse con area compresa tra il $30\%$ e il $79\%$, dove la localizzazione non è banale), la quota trattenuta raggiunge il $63.60\%$.
+    \item \textbf{Comportamento sulle classi Tiny}: il mancato rilevamento sui target di taglia ridotta ($0.00\%$ mAP@50) non è causato dalla risoluzione della griglia dei token: DINOv3 isola la sagoma dell'oggetto, ma la loss di classificazione globale concentra il picco di attivazione sullo sfondo murario (\textit{attribution leakage}).
+\end{enumerate}
+
+\section{Sviluppi Futuri}
+\label{sec:conc_sviluppi}
+I risultati suggeriscono quattro direzioni di approfondimento metodologico:
+\begin{enumerate}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
+    \item \textbf{Rilevamento di istanze multiple}: integrare meccanismi di cross-attention o prompt semantici sui token di DINOv3 per separare riquadri distinti nelle inquadrature che contengono copie multiple dello stesso elemento.
+    \item \textbf{Classificazione gerarchica multi-etichetta}: sfruttare l'alta accuratezza del classificatore nell'identificare il macro-ambiente ($92.87\%$) con un modello a due stadi (ambiente $\to$ POI), impiegando una perdita BCE multi-label con attivazioni Sigmoid indipendenti per slegare l'attivazione della stanza da quella dell'oggetto.
+    \item \textbf{Regolarizzazione contrastiva sui token}: applicare una perdita contrastiva a livello di patch per penalizzare l'attivazione spuria su strutture architettoniche fisse (archi, volte), concentrando l'attenzione sulle specificità dell'opera.
+    \item \textbf{Valutazione disaccoppiata}: affiancare al mAP standard la metrica Correct Localization (CorLoc)~\cite{choe2020evaluating} e il mAP \textit{class-agnostic}, per separare la precisione geometrica del riquadro dalla correttezza dell'etichetta semantica.
+\end{enumerate}

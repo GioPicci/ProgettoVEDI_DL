@@ -1,0 +1,3 @@
+--> RISULTATI Epoca [13/20]:
+Train Loss: 0.0133 | Train Acc: 99.60%
+Val Loss:   0.1031 | Val Acc:   98.31% | Val F1-Macro: 0.9829

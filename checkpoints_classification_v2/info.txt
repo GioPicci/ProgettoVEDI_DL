@@ -1,0 +1,2 @@
+BEST epoch=20 val_acc=92.04% val_f1_macro=0.9178
+train=45030 val=11400 classes=58

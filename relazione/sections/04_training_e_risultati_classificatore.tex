@@ -1,0 +1,164 @@
+\chapter{Training e Prestazioni del Classificatore DINOv3}
+\label{chap:training_classificatore}
+
+\section{Setup Sperimentale e Metodologia di Addestramento}
+\label{sec:class_setup}
+
+\subsection{Preprocessing e Data Augmentation}
+Il classificatore usa il backbone ViT-S/16 congelato con testa lineare a 57 classi descritto nella Sezione~\ref{sec:arch_linear_probing}. Ogni fotogramma RGB viene ridimensionato a $384 \times 384$ pixel e normalizzato con i valori standard di ImageNet ($\mu = [0.485, 0.456, 0.406]$, $\sigma = [0.229, 0.224, 0.225]$).
+
+Per gestire le variazioni di illuminazione e di prospettiva tipiche delle riprese egocentriche indoor (zone in ombra, luce naturale variabile e rotazioni del capo), durante l'addestramento vengono applicate due forme di data augmentation stocastica:
+\begin{itemize}
+    \item \textbf{Random Horizontal Flip}: riflessione orizzontale casuale con probabilità $p = 0.5$;
+    \item \textbf{Color Jitter}: alterazione casuale di luminosità, contrasto e saturazione nell'intervallo $[0.7, 1.3]$ ($p = 0.5$ ciascuna) e lieve variazione della tonalità ($p = 0.3$).
+\end{itemize}
+In validazione e test ogni trasformazione casuale è disattivata.
+
+\subsection{Ottimizzazione e iperparametri}
+L'addestramento minimizza la consueta Cross-Entropy multiclasse:
+\begin{equation}
+    \mathcal{L}_{\text{CE}}(\mathbf{y}, \hat{\mathbf{y}}) = - \sum_{c=1}^{57} y_c \log \left( \frac{\exp(\hat{y}_c)}{\sum_{j=1}^{57} \exp(\hat{y}_j)} \right)
+\end{equation}
+Gli iperparametri impostati per l'ottimizzazione sono riassunti nella Tabella~\ref{tab:iperparametri_class}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lcL}
+\toprule
+\textbf{Parametro} & \textbf{Valore} & \textbf{Descrizione / Motivazione Operativa} \\
+\midrule
+\textbf{Ottimizzatore} & AdamW & $\beta_1=0.9, \, \beta_2=0.999, \, \epsilon=10^{-8}$ \\
+\textbf{Learning Rate ($\eta_0$)} & $1 \times 10^{-4}$ & Tasso di apprendimento sulla testa lineare \\
+\textbf{Weight Decay} & $1 \times 10^{-4}$ & Regolarizzazione $L_2$ sui pesi della testa \\
+\textbf{Dimensione Batch} & $16$ & Compromesso stabilità gradiente e memoria VRAM \\
+\textbf{Numero di epoche} & $20$ & Criterio di arresto globale \\
+\textbf{LR Scheduler} & Cosine + Warmup & Warmup lineare iniziale seguito da decadimento cosinusoidale \\
+\textbf{Dropout rate} & $0.3$ & Regolarizzazione applicata prima della proiezione \\
+\textbf{Miglior modello} & Epoca 13 & Checkpoint alla massima accuratezza di validazione ($98.31\%$) \\
+\bottomrule
+\end{tabularx}
+\caption{Configurazione degli iperparametri per il training del classificatore DINOv3.}
+\label{tab:iperparametri_class}
+\end{table}
+
+\section{Risultati di Classificazione sul Test Set Ufficiale}
+\label{sec:class_risultati}
+
+\subsection{Metriche globali}
+La valutazione è condotta sul test set ufficiale ($5.462$ immagini distribuite su 7 sessioni video continue), considerando i $3.673$ fotogrammi provvisti di annotazioni di POI. Delle 57 classi del dataset, 56 compaiono nel test set (la classe \texttt{3.8\_StanzaAbate} non presenta registrazioni nelle 7 sessioni).
+I risultati globali sono riportati nella Tabella~\ref{tab:metriche_globali_class}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lcL}
+\toprule
+\textbf{Metrica Globale} & \textbf{Valore} & \textbf{Note Metodologiche} \\
+\midrule
+\textbf{Top-1 Accuracy} & \textbf{70.24\%} & Frazione globale di predizioni corrette su $3.673$ campioni \\
+\textbf{Top-5 Accuracy} & \textbf{84.32\%} & Classe reale inclusa nei primi 5 logit predetti \\
+\textbf{Macro Recall} & \textbf{72.10\%} & Media aritmetica del recall calcolata sulle 56 classi \\
+\textbf{Macro Precision} & \textbf{73.54\%} & Media aritmetica della precisione sulle classi valutate \\
+\textbf{Macro F1-Score} & \textbf{70.00\%} & Media non pesata della media armonica precision-recall \\
+\textbf{Weighted F1-Score} & \textbf{70.23\%} & Punteggio F1 ponderato sul supporto campionario di classe \\
+\bottomrule
+\end{tabularx}
+\caption{Prestazioni globali del classificatore DINOv3 sul Test Set ufficiale.}
+\label{tab:metriche_globali_class}
+\end{table}
+
+I valori di $70.24\%$ di Top-1 Accuracy e $84.32\%$ di Top-5 Accuracy su 56 classi attive indicano una buona capacità di discriminazione delle feature DINOv3 in riprese egocentriche non controllate.
+
+\subsection{Prestazioni disaggregate per Tier dimensionale}
+La Tabella~\ref{tab:prestazioni_tier_class} scompone le metriche lungo i 4 tier dimensionali del dataset.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
+\toprule
+\textbf{Tier} & \textbf{Classi} & \textbf{Campioni} & \textbf{Acc. Mac.} & \textbf{Acc. Pes.} & \textbf{Prec. Mac.} & \textbf{F1 Mac.} \\
+\midrule
+\textbf{Tiny} ($\le 0.10$) & $4 / 4$ & $98$ & \textbf{94.38\%} & \textbf{90.82\%} & $79.48\%$ & \textbf{83.86\%} \\
+\textbf{Small} ($0.11 - 0.30$) & $3 / 3$ & $104$ & \textbf{84.71\%} & \textbf{85.58\%} & $78.10\%$ & \textbf{80.66\%} \\
+\textbf{Macro} ($0.30 - 0.79$) & $26 / 27$ & $1.490$ & \textbf{66.10\%} & \textbf{60.20\%} & $78.44\%$ & \textbf{69.02\%} \\
+\textbf{Full-Frame} ($\ge 0.80$) & $23 / 23$ & $1.981$ & \textbf{73.38\%} & \textbf{75.97\%} & $66.37\%$ & \textbf{67.31\%} \\
+\midrule
+\textbf{Complessivo} & $56 / 57$ & $3.673$ & \textbf{72.10\%} & \textbf{70.24\%} & $73.54\%$ & \textbf{70.00\%} \\
+\bottomrule
+\end{tabular*}
+\caption{Prestazioni del classificatore disaggregate per fascia dimensionale (Tier).}
+\label{tab:prestazioni_tier_class}
+\end{table}
+
+\subsection{Analisi del Tier Tiny}
+L'apparente paradosso delle prestazioni massime conseguite sul Tier Tiny ($94.38\%$ di accuratezza macro e $90.82\%$ pesata) deriva da due fattori:
+\begin{enumerate}
+    \item \textbf{Supporto campionario ridotto}: il gruppo comprende 4 classi e appena 98 campioni nel test set ($2.7\%$ delle annotazioni complessive, a fronte dei $1.490$ di Macro e $1.981$ di Full-Frame). La ridotta variabilità dei punti di vista favorisce punteggi percentuali elevati.
+    \item \textbf{Ancoraggio al contesto}: il classificatore categorizza l'immagine riconoscendo non tanto il minuto manufatto in sé, quanto l'ambiente monumentale che lo contiene (volte, stucchi, pareti caratteristiche). Sebbene sufficiente per la classificazione d'immagine, questo ancoraggio contestuale disperde le attivazioni nella successiva localizzazione WSOL, compromettendo la generazione del bounding box.
+\end{enumerate}
+
+\subsection{Analisi Topologica degli Errori}
+La matrice di confusione completa a $57 \times 57$ classi è riportata nell'Appendice~\ref{chap:appendice_classi}. Per interpretare la struttura degli errori, le predizioni sono scomposte sui 9 macro-ambienti del complesso (Tabella~\ref{tab:scomposizione_errori}).
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccccc}
+\toprule
+\textbf{Macro-Ambiente} & \textbf{Campioni} & \textbf{Top-1} & \textbf{Err. Intra} & \textbf{Err. Inter} & \textbf{Acc. Area} \\
+\midrule
+\textbf{Area 1 — Ingresso} & $53$ & $92.5\%$ & — & $7.5\%$ & \textbf{92.5\%} \\
+\textbf{Area 2 — Scalone} & $189$ & $74.1\%$ & $23.3\%$ & $2.6\%$ & \textbf{97.4\%} \\
+\textbf{Area 3 — Chiostro/Corr.} & $1.461$ & $53.8\%$ & $34.5\%$ & $11.7\%$ & \textbf{88.3\%} \\
+\textbf{Area 4 — Cantoria/Chiesa} & $384$ & $89.8\%$ & — & $10.2\%$ & \textbf{89.8\%} \\
+\textbf{Area 5 — Antirefettorio} & $324$ & $76.2\%$ & $18.5\%$ & $5.2\%$ & \textbf{94.8\%} \\
+\textbf{Area 6 — Coro di Notte} & $294$ & $76.9\%$ & $19.4\%$ & $3.7\%$ & \textbf{96.3\%} \\
+\textbf{Area 7 — Ref. Piccolo} & $393$ & $79.1\%$ & $18.6\%$ & $2.3\%$ & \textbf{97.7\%} \\
+\textbf{Area 8 — Cucine/Sott.} & $449$ & $83.7\%$ & $14.9\%$ & $1.3\%$ & \textbf{98.7\%} \\
+\textbf{Area 9 — Giardino} & $126$ & $79.4\%$ & $20.6\%$ & \textbf{0.0\%} & \textbf{100.0\%} \\
+\midrule
+\textbf{Totale Globale} & \textbf{3.673} & \textbf{70.24\%} & \textbf{22.62\%} & \textbf{7.13\%} & \textbf{92.87\%} \\
+\bottomrule
+\end{tabular*}
+\caption{Scomposizione topologica delle predizioni del classificatore sui 9 macro-ambienti.}
+\label{tab:scomposizione_errori}
+\end{table}
+
+Sui $3.673$ fotogrammi di test si distinguono tre esiti:
+\begin{itemize}
+    \item $70.24\%$: predizione esatta dell'opera specifica;
+    \item $22.62\%$: errore intra-ambiente (il modello scambia due POI appartenenti alla medesima sala);
+    \item $7.13\%$: errore inter-ambiente (scambio tra macro-ambienti differenti).
+\end{itemize}
+Il modello individua il macro-ambiente corretto nel $92.87\%$ dei casi ($70.24\% + 22.62\%$). Sul totale degli errori commessi ($29.76\%$), il $76.0\%$ ($22.62 / 29.76$) è costituito da ambiguità locali tra soggetti contigui, mentre solo il $24.0\%$ ($7.13 / 29.76$) rappresenta una confusione tra ambienti distinti.
+
+Aggregando le predizioni nella matrice di confusione $9 \times 9$ (Tabella~\ref{tab:matrice_macro_ambienti}), la diagonale risulta nettamente dominante.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccccccc}
+\toprule
+\textbf{Area Reale} & \textbf{A1} & \textbf{A2} & \textbf{A3} & \textbf{A4} & \textbf{A5} & \textbf{A6} & \textbf{A7} & \textbf{A8} & \textbf{A9} & \textbf{Recall} \\
+\midrule
+\textbf{1. Ingresso} & \textbf{49} & $0$ & $1$ & $1$ & $0$ & $0$ & $0$ & $0$ & $2$ & \textbf{92.5\%} \\
+\textbf{2. Scalone} & $1$ & \textbf{184} & $4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & \textbf{97.4\%} \\
+\textbf{3. Chiostro/Corr.} & $62$ & $44$ & \textbf{1290} & $5$ & $14$ & $9$ & $12$ & $13$ & $12$ & \textbf{88.3\%} \\
+\textbf{4. Cantoria/Chiesa} & $0$ & $1$ & $7$ & \textbf{345} & $0$ & $31$ & $0$ & $0$ & $0$ & \textbf{89.8\%} \\
+\textbf{5. Antirefettorio} & $0$ & $3$ & $10$ & $1$ & \textbf{307} & $3$ & $0$ & $0$ & $0$ & \textbf{94.8\%} \\
+\textbf{6. Coro di Notte} & $0$ & $0$ & $5$ & $2$ & $2$ & \textbf{283} & $1$ & $1$ & $0$ & \textbf{96.3\%} \\
+\textbf{7. Ref. Piccolo} & $0$ & $0$ & $4$ & $0$ & $4$ & $1$ & \textbf{384} & $0$ & $0$ & \textbf{97.7\%} \\
+\textbf{8. Cucine/Sott.} & $0$ & $0$ & $1$ & $1$ & $0$ & $0$ & $4$ & \textbf{443} & $0$ & \textbf{98.7\%} \\
+\textbf{9. Giardino} & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & \textbf{126} & \textbf{100.0\%} \\
+\bottomrule
+\end{tabular*}
+\caption{Matrice di confusione aggregata $9 \times 9$ tra i macro-ambienti monumentali.}
+\label{tab:matrice_macro_ambienti}
+\end{table}
+
+I rari scambi inter-ambiente riflettono la contiguità architettonica: l'Area 3 (Chiostro e Corridoi) scambia campioni principalmente con l'Area 1 ($62$ frame) e l'Area 2 ($44$ frame), che sono i varchi di passaggio; l'Area 4 (Cantoria) scambia $31$ frame con l'Area 6 (Coro di Notte), poiché entrambe condividono lo scorcio prospettico sulla navata della chiesa.

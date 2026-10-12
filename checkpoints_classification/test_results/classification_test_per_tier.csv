@@ -1,0 +1,5 @@
+tier,num_classes_total,num_classes_evaluated,total_samples,accuracy_macro_pct,accuracy_weighted_pct,precision_macro_pct,f1_macro_pct
+Tiny,4,4,98,94.38,90.82,79.48,83.86
+Small,3,3,104,84.71,85.58,78.1,80.66
+Macro,27,26,1490,66.1,60.2,78.44,69.02
+Full-Frame,23,23,1981,73.38,75.97,66.37,67.31

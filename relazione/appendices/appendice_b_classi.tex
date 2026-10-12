@@ -1,0 +1,90 @@
+\chapter{Tassonomia Completa delle Classi e Aree Medie}
+\label{chap:appendice_classi}
+
+Questa appendice elenca le 57 classi di punti di interesse del dataset UNICT-VEDI POI, registrate presso il Monastero dei Benedettini di Catania.
+
+Per ciascuna classe sono indicati:
+\begin{itemize}
+    \item \textbf{ID}: indice numerico secondo l'ordinamento naturale del dataset ($[0, 56]$).
+    \item \textbf{Nome POI / Cartella}: denominazione della classe con prefisso dell'ambiente ($1 \dots 9$).
+    \item \textbf{Tier Dimensionale}: fascia di scala assegnata (\textit{Tiny}, \textit{Small}, \textit{Macro}, \textit{Full-Frame}).
+    \item \textbf{Area Media Relativa ($\bar{A}_c$)}: frazione media di superficie ($w \times h$) del riquadro di ground truth rispetto all'immagine.
+    \item \textbf{Copertura \%}: area media espressa in percentuale dell'inquadratura.
+\end{itemize}
+
+\section{Prospetto delle 57 Classi POI}
+\label{sec:app_tabella_57_classi}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{cp{5.6cm}ccc}
+\toprule
+\textbf{ID} & \textbf{Nome POI / Cartella} & \textbf{Tier} & \textbf{Area Media ($\bar{A}_c$)} & \textbf{Copertura} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{\small\textit{Continua nella pagina seguente}} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+0 & \texttt{1.1\_Ingresso} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+1 & \texttt{2.1\_RampaS.Nicola} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+2 & \texttt{2.2\_RampaS.Benedetto} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+3 & \texttt{3.1\_SimboloTreBiglie} & \textbf{Full-Frame} & 0.891 & 89.1\% \\
+4 & \texttt{3.2\_ChiostroLevante} & \textbf{Macro} & 0.739 & 73.9\% \\
+5 & \texttt{3.3\_Plastico} & \textbf{Full-Frame} & 0.890 & 89.0\% \\
+6 & \texttt{3.4\_Affresco} & \textbf{Macro} & 0.629 & 62.9\% \\
+7 & \texttt{3.5\_FinestraChiostroLevante} & \textbf{Macro} & 0.688 & 68.8\% \\
+8 & \texttt{3.6\_PortaCorodiNotte} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+9 & \texttt{3.7\_TracciaPortone} & \textbf{Macro} & 0.486 & 48.6\% \\
+10 & \texttt{3.8\_StanzaAbate} & \textbf{Macro} & 0.612 & 61.2\% \\
+11 & \texttt{3.9\_CorridoiodiLevante} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+12 & \texttt{3.10\_CorridoioCorodiNotte} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+13 & \texttt{3.11\_CorridoioOrologio} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+14 & \texttt{4.1\_Quadro} & \textbf{Macro} & 0.396 & 39.6\% \\
+15 & \texttt{4.2\_PavimentoOrig.Altare} & \textbf{Macro} & 0.632 & 63.2\% \\
+16 & \texttt{4.3\_BalconeChiesa} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+17 & \texttt{5.1\_PortaAulaS.Mazzarino} & \textbf{Macro} & 0.648 & 64.8\% \\
+18 & \texttt{5.2\_PortaIngressoMuseoFabbrica} & \textbf{Macro} & 0.459 & 45.9\% \\
+19 & \texttt{5.3\_PortaAntirefettorio} & \textbf{Macro} & 0.757 & 75.7\% \\
+20 & \texttt{5.4\_PortaIngressoRef.Piccolo} & \textbf{Macro} & 0.661 & 66.1\% \\
+21 & \texttt{5.5\_Cupola} & \textbf{Tiny} & 0.072 & 7.2\% \\
+22 & \texttt{5.6\_AperturaPavimento} & \textbf{Macro} & 0.571 & 57.1\% \\
+23 & \texttt{5.7\_S.Agata} & \textbf{Tiny} & 0.051 & 5.1\% \\
+24 & \texttt{5.8\_S.Scolastica} & \textbf{Tiny} & 0.045 & 4.5\% \\
+25 & \texttt{5.9\_ArcoconFirma} & \textbf{Macro} & 0.751 & 75.1\% \\
+26 & \texttt{5.10\_BustoVaccarini} & \textbf{Macro} & 0.536 & 53.6\% \\
+27 & \texttt{6.1\_QuadroSantoMazzarino} & \textbf{Small} & 0.219 & 21.9\% \\
+28 & \texttt{6.2\_Affresco} & \textbf{Macro} & 0.576 & 57.6\% \\
+29 & \texttt{6.3\_PavimentoOriginale} & \textbf{Macro} & 0.632 & 63.2\% \\
+30 & \texttt{6.4\_PavimentoRestaurato} & \textbf{Full-Frame} & 0.964 & 96.4\% \\
+31 & \texttt{6.5\_BassorilieviMancanti} & \textbf{Tiny} & 0.031 & 3.1\% \\
+32 & \texttt{6.6\_LavamaniSx} & \textbf{Small} & 0.272 & 27.2\% \\
+33 & \texttt{6.7\_LavamaniDx} & \textbf{Macro} & 0.315 & 31.5\% \\
+34 & \texttt{6.8\_TavoloRelatori} & \textbf{Macro} & 0.736 & 73.6\% \\
+35 & \texttt{6.9\_Poltrone} & \textbf{Full-Frame} & 0.827 & 82.7\% \\
+36 & \texttt{7.1\_Edicola} & \textbf{Full-Frame} & 0.895 & 89.5\% \\
+37 & \texttt{7.2\_PavimentoA} & \textbf{Full-Frame} & 0.925 & 92.5\% \\
+38 & \texttt{7.3\_PavimentoB} & \textbf{Full-Frame} & 0.813 & 81.3\% \\
+39 & \texttt{7.4\_Passavivande} & \textbf{Full-Frame} & 0.897 & 89.7\% \\
+40 & \texttt{7.5\_AperturaPavimento} & \textbf{Macro} & 0.701 & 70.1\% \\
+41 & \texttt{7.6\_Scala} & \textbf{Macro} & 0.746 & 74.6\% \\
+42 & \texttt{7.7\_SalaMetereologica} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+43 & \texttt{8.1\_Doccione} & \textbf{Macro} & 0.484 & 48.4\% \\
+44 & \texttt{8.2\_VanoRaccoltaCenere} & \textbf{Macro} & 0.591 & 59.1\% \\
+45 & \texttt{8.3\_SalaRossa} & \textbf{Full-Frame} & 0.998 & 99.8\% \\
+46 & \texttt{8.4\_ScalaCucina} & \textbf{Macro} & 0.536 & 53.6\% \\
+47 & \texttt{8.5\_CucinaProvv} & \textbf{Full-Frame} & 0.940 & 94.0\% \\
+48 & \texttt{8.6\_Ghiacciaia} & \textbf{Full-Frame} & 0.855 & 85.5\% \\
+49 & \texttt{8.7\_Latrina} & \textbf{Macro} & 0.548 & 54.8\% \\
+50 & \texttt{8.8\_OssaeScarti} & \textbf{Macro} & 0.647 & 64.7\% \\
+51 & \texttt{8.9\_Pozzo} & \textbf{Full-Frame} & 0.817 & 81.7\% \\
+52 & \texttt{8.10\_Cisterna} & \textbf{Macro} & 0.786 & 78.6\% \\
+53 & \texttt{8.11\_BustoPietroTacchini} & \textbf{Small} & 0.297 & 29.7\% \\
+54 & \texttt{9.1\_NicchiaePavimento} & \textbf{Full-Frame} & 0.876 & 87.6\% \\
+55 & \texttt{9.2\_TraccePalestra} & \textbf{Macro} & 0.658 & 65.8\% \\
+56 & \texttt{9.3\_PergolatoNovizi} & \textbf{Full-Frame} & 0.841 & 84.1\% \\
+\end{longtable}
+\endgroup

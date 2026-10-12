@@ -1,0 +1,10 @@
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Sommario}
+\chapter*{Sommario}
+
+L'annotazione manuale di riquadri di delimitazione (\textit{bounding box}) per l'object detection richiede tempo e risorse considerevoli, in particolare nei domini specialistici come i beni culturali. In questo lavoro si esamina il paradigma della \textit{Weakly-Supervised Object Localization} (WSOL) applicato al dataset egocentrico UNICT-VEDI POI, che raccoglie 57 classi di elementi monumentali nel Monastero dei Benedettini di Catania.
+
+Sfruttando le feature di auto-segmentazione del modello DINOv3 ViT-S/16 con testa lineare (\textit{linear probing}), è stata definita una procedura basata su Linear-CAM per ricavare pseudo-annotazioni spaziali a partire dalle sole etichette di classe dell'immagine. Le etichette così generate servono ad addestrare il rilevatore compatto YOLOv8n, senza impiegare coordinate cartesiane supervisionate nel processo di apprendimento.
+
+Per quantificare il risparmio di annotazione, è stato impostato un confronto di \textit{sample efficiency} rispetto a baseline supervisionate addestrate su quote progressive ($1\% \dots 100\%$) del ground truth con tre repliche stocastiche. Il modello distillato ottiene il $37.39\%$ di mAP@50, prestazione equivalente all'$1.43\%$ di dati etichettati a mano e pari al $61.79\%$ della capacità del rilevatore supervisionato al $100\%$. L'analisi per scala dimensionale evidenzia una ritenzione del $63.60\%$ nel Tier Macro (26 classi di taglia intermedia non degeneri) e dell'$84.14\%$ nel Tier Full-Frame. L'esame dei fallimenti nel Tier Tiny ($0.00\%$ mAP@50) mostra inoltre che l'errore sistematico non deriva dalla risoluzione spaziale delle patch, ma dal bias di contesto e dall'\textit{attribution leakage}: i massimi di attivazione del classificatore scivolano sulle strutture murarie contigue anziché sul piccolo reperto da localizzare.
