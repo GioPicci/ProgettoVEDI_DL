@@ -20,9 +20,9 @@ OUTPUT_DIR = BENCHMARK_DIR / "stratified_test_results"
 
 # (Opzionale) pesi della YOLO addestrata sul dataset distillato (WSOL).
 # Se il file esiste viene valutato con la stessa procedura e salvato in distilled_per_class.csv.
-# Metti None per saltare.
-DISTILLED_WEIGHTS = Path(
-    r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\runs\detect\runs_yolo_distilled\yolov8n\weights\best.pt"
+REPO_ROOT = SCRIPT_DIR.parent
+DISTILLED_WEIGHTS = (
+    REPO_ROOT / "runs" / "detect" / "runs_yolo_distilled" / "yolov8n" / "weights" / "best.pt"
 )
 
 IMG_SIZE = 640

@@ -18,9 +18,9 @@ from torchmetrics.detection import MeanAveragePrecision
 # ==========================================
 # 0. SCELTA VERSIONE (parametro)
 # ==========================================
-# v1 -> modello a 57 classi, NESSUN background.
-# v2 -> modello a 58 classi (57 POI + "Negatives"), con background.
-VERSION = "v2"  # "v1" oppure "v2"; sovrascrivibile da riga di comando
+# v1 -> modello canonico a 57 classi, NESSUN background (approccio definitivo).
+# v2 -> modello sperimentale a 58 classi con background (archiviato in archive/).
+VERSION = "v1"  # "v1" (definitivo) oppure "v2" (archiviato); sovrascrivibile da riga di comando
 
 CONFIGS = {
     "v1": {
@@ -32,9 +32,9 @@ CONFIGS = {
         "use_background": False,
     },
     "v2": {
-        "checkpoint": "./checkpoints_classification_v2/best_model.pth",
-        "class_map": "./checkpoints_classification_v2/class_map.json",
-        "output_dir": "./checkpoints_classification_v2/wsol_benchmark",
+        "checkpoint": "./archive/checkpoints_classification_v2/best_model.pth",
+        "class_map": "./archive/checkpoints_classification_v2/class_map.json",
+        "output_dir": "./archive/checkpoints_classification_v2/wsol_benchmark",
         "results_name": "wsol_results_v2.json",
         "csv_name": "wsol_per_class_v2.csv",
         "use_background": True,

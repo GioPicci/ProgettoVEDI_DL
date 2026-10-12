@@ -14,7 +14,8 @@ def check_bbox_sizes(labels_dir):
                     areas[cls_id].append(w * h)
     return {c: sum(a) / len(a) for c, a in areas.items() if a}
 
-origin = r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training"
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+origin = os.path.join(repo_root, "data", "UNICT-VEDI_Dataset_bbox", "Training")
 for folder in os.listdir(origin):
     # Verifica se in train l'area media di certe classi è ~1.0
     print(folder)

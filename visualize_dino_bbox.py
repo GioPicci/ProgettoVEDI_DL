@@ -16,11 +16,11 @@ from transformers import AutoImageProcessor, AutoModel
 # ==============================================================================
 # CONFIGURAZIONE
 # ==============================================================================
-DATASET_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training")
-CHECKPOINT_PATH = Path("./checkpoints_classification/best_model.pth")
-CLASS_MAP_PATH = Path("./checkpoints_classification/class_map.json")
-MODEL_NAME = "facebook/dinov3-vits16-pretrain-lvd1689m"
-OUTPUT_DIR = Path("./visual_sample_dino_vs_gt")
+BASE_DIR = Path(__file__).resolve().parent
+DATASET_DIR = BASE_DIR / "data" / "UNICT-VEDI_Dataset_bbox" / "Training"
+CHECKPOINT_PATH = BASE_DIR / "checkpoints_classification" / "best_model.pth"
+CLASS_MAP_PATH = BASE_DIR / "checkpoints_classification" / "class_map.json"
+OUTPUT_DIR = BASE_DIR / "visual_sample_dino_vs_gt"
 
 # NUMERO DI IMMAGINI DA CAMPIONARE PER CLASSE
 SAMPLES_PER_CLASS = 10

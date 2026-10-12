@@ -9,10 +9,11 @@ from ultralytics import YOLO
 # ==========================================
 # 1. CONFIGURAZIONE
 # ==========================================
-TEST_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Test")
-RUNS_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\runs\detect\runs_yolo_distilled")
-CLASS_MAP_PATH = Path("../checkpoints_classification/class_map.json")
-OUTPUT_TEST_RUNS = Path("./runs_test_distill_on_gt_results")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+TEST_DIR = REPO_ROOT / "data" / "UNICT-VEDI_Dataset_bbox" / "Test"
+RUNS_DIR = REPO_ROOT / "runs" / "detect" / "runs_yolo_distilled"
+CLASS_MAP_PATH = REPO_ROOT / "checkpoints_classification" / "class_map.json"
+OUTPUT_TEST_RUNS = Path(__file__).resolve().parent / "runs_test_distill_on_gt_results"
 
 MODELS = ["yolov8n", "yolo11n", "yolo26n"]
 IMG_SIZE, BATCH_SIZE = 640, 16

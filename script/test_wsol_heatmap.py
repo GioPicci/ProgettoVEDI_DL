@@ -147,16 +147,26 @@ def get_grad_cam(logits, attentions, pred_class_id, num_patches, grid_h, grid_w)
     return cam
 
 
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # ==========================================
 # 4. PIPELINE DI BENCHMARK E VISUALIZZAZIONE
 # ==========================================
 def run_wsol_benchmark(
         image_path,
-        checkpoint_path="../checkpoints_classification/best_model.pth",
-        class_map_path="../checkpoints_classification/class_map.json",
+        checkpoint_path=None,
+        class_map_path=None,
         model_name="facebook/dinov3-vits16-pretrain-lvd1689m",
-        output_save_path="wsol_benchmark_comparison.png"
+        output_save_path=None
 ):
+    if checkpoint_path is None:
+        checkpoint_path = os.path.join(REPO_ROOT, "checkpoints_classification", "best_model.pth")
+    if class_map_path is None:
+        class_map_path = os.path.join(REPO_ROOT, "checkpoints_classification", "class_map.json")
+    if output_save_path is None:
+        out_dir = os.path.join(REPO_ROOT, "script", "outputs")
+        os.makedirs(out_dir, exist_ok=True)
+        output_save_path = os.path.join(out_dir, "wsol_benchmark_comparison.png")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"--> Esecuzione Benchmark su Device: {device}")
 

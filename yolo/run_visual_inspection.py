@@ -9,11 +9,11 @@ from ultralytics import YOLO
 # ==========================================
 # CONFIGURAZIONE
 # ==========================================
-TEST_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Test")
-WEIGHTS_PATH = Path(
-    r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\runs\detect\runs_yolo_gt\yolov8n\weights\best.pt")
-CLASS_MAP_PATH = Path("../checkpoints_classification/class_map.json")
-OUTPUT_DIR = Path("./visual_inspection_samples")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+TEST_DIR = REPO_ROOT / "data" / "UNICT-VEDI_Dataset_bbox" / "Test"
+WEIGHTS_PATH = REPO_ROOT / "runs" / "detect" / "runs_yolo_gt" / "yolov8n" / "weights" / "best.pt"
+CLASS_MAP_PATH = REPO_ROOT / "checkpoints_classification" / "class_map.json"
+OUTPUT_DIR = Path(__file__).resolve().parent / "visual_inspection_samples"
 
 SAMPLES_PER_CLASS = 3
 CONF_THRESHOLD = 0.20

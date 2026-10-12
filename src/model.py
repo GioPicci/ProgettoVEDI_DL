@@ -2,6 +2,54 @@ import torch
 import torch.nn as nn
 from transformers import AutoModel
 
+
+class DINOClassifier(nn.Module):
+    """
+    Classificatore canonico basato su DINOv3 (ViT-S/16) con Linear Probing.
+    Supporta:
+      - Congelamento del backbone
+      - Estrazione di hidden_states (per Linear-CAM, Eigen-CAM, ecc.)
+      - Estrazione di attention weights (per DINO Attention Map)
+      - attn_implementation flessibile (es. 'eager')
+    """
+    def __init__(
+        self,
+        model_name="facebook/dinov3-vits16-pretrain-lvd1689m",
+        num_classes=57,
+        freeze_backbone=False,
+        dropout=0.3,
+        attn_implementation=None
+    ):
+        super().__init__()
+        kwargs = {}
+        if attn_implementation is not None:
+            kwargs["attn_implementation"] = attn_implementation
+        self.backbone = AutoModel.from_pretrained(model_name, **kwargs)
+
+        if freeze_backbone:
+            for param in self.backbone.parameters():
+                param.requires_grad = False
+
+        hidden_size = self.backbone.config.hidden_size
+        self.classifier = nn.Sequential(
+            nn.Dropout(dropout),
+            nn.Linear(hidden_size, num_classes)
+        )
+
+    def forward(self, pixel_values, return_hidden_state=False, return_attentions=False):
+        outputs = self.backbone(pixel_values=pixel_values, output_attentions=return_attentions)
+        cls_token = outputs.last_hidden_state[:, 0, :]
+        logits = self.classifier(cls_token)
+
+        if return_hidden_state and return_attentions:
+            return logits, outputs.last_hidden_state, outputs.attentions
+        if return_hidden_state:
+            return logits, outputs.last_hidden_state
+        if return_attentions:
+            return logits, outputs.attentions
+        return logits
+
+
 class DINOObjectDetector(nn.Module):
     def __init__(self, num_classes, num_queries=100, use_v3=False, unfreeze_last_n=0):
         super().__init__()

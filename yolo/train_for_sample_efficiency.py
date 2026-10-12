@@ -10,10 +10,11 @@ from ultralytics import YOLO
 # ==============================================================================
 # CONFIGURAZIONE SPERIMENTAZIONE
 # ==============================================================================
-TRAIN_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training")
-TEST_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Test")
-CLASS_MAP_PATH = Path("../checkpoints_classification/class_map.json")
-OUTPUT_BENCHMARK = Path("./runs_sample_efficiency")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+TRAIN_DIR = REPO_ROOT / "data" / "UNICT-VEDI_Dataset_bbox" / "Training"
+TEST_DIR = REPO_ROOT / "data" / "UNICT-VEDI_Dataset_bbox" / "Test"
+CLASS_MAP_PATH = REPO_ROOT / "checkpoints_classification" / "class_map.json"
+OUTPUT_BENCHMARK = Path(__file__).resolve().parent / "runs_sample_efficiency"
 
 # Percentuali di Ground Truth da testare
 FRACTIONS = [0.01, 0.02] # [0.05, 0.10, 0.20, 0.40]

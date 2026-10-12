@@ -12,13 +12,14 @@ from ultralytics import YOLO
 # 1. CONFIGURAZIONE
 # ==========================================
 
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Dataset generato dallo script di auto-labeling (teacher DINOv3)
-OUTPUT_DATASET_DIR = r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\dataset_yolo_distilled"
-CLASS_MAP_PATH = "./checkpoints_classification/class_map.json"
+OUTPUT_DATASET_DIR = os.path.join(REPO_ROOT, "data", "dataset_yolo_distilled")
+CLASS_MAP_PATH = os.path.join(REPO_ROOT, "checkpoints_classification", "class_map.json")
 
 # Cartella ORIGINALE (sola lettura) usata anche da VEDIClassificationDataset per allenare DINO.
 # Serve qui SOLO per ricostruire lo stesso split train/val, non viene mai scritta.
-DINO_TRAINING_DIR = r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training"
+DINO_TRAINING_DIR = os.path.join(REPO_ROOT, "data", "UNICT-VEDI_Dataset_bbox", "Training")
 
 # Deve combaciare con il val_ratio usato per istanziare VEDIClassificationDataset/VEDIDataset
 # quando hai allenato DINO. Il default nella classe è 0.2: aggiorna se hai usato un altro valore.

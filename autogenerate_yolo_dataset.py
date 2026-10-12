@@ -109,10 +109,10 @@ def collect_images(dataset_dir, extensions=(".jpg", ".jpeg", ".png")):
 # ==========================================
 def generate_yolo_labels():
     # ---- SETUP PERCORSI ----
-    # Cartella radice con le sottocartelle per singolo reperto/ambiente (NON piatta)
-    DATASET_DIR = r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training"
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATASET_DIR = os.path.join(BASE_DIR, "data", "UNICT-VEDI_Dataset_bbox", "Training")
     # Cartella di OUTPUT completamente separata: qui scriviamo il nuovo dataset "distillato" per YOLO
-    OUTPUT_DATASET_DIR = r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\dataset_yolo_distilled"
+    OUTPUT_DATASET_DIR = os.path.join(BASE_DIR, "data", "dataset_yolo_distilled")
 
     CHECKPOINT_PATH = "./checkpoints_classification/best_model.pth"
     CLASS_MAP_PATH = "./checkpoints_classification/class_map.json"

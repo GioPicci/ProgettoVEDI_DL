@@ -11,9 +11,10 @@ from ultralytics import YOLO
 # 1. CONFIGURAZIONE
 # ==========================================
 
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Cartella Ground-Truth originale del dataset di Training (sola lettura)
-GT_TRAINING_DIR = r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training"
-CLASS_MAP_PATH = "./checkpoints_classification/class_map.json"
+GT_TRAINING_DIR = os.path.join(REPO_ROOT, "data", "UNICT-VEDI_Dataset_bbox", "Training")
+CLASS_MAP_PATH = os.path.join(REPO_ROOT, "checkpoints_classification", "class_map.json")
 
 # Deve combaciare con il val_ratio usato per istanziare VEDIClassificationDataset/VEDIDataset
 DINO_VAL_RATIO = 0.2

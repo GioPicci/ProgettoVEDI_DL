@@ -2,11 +2,12 @@ import os
 import glob
 from PIL import Image
 
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Cartelle da correggere
 TARGET_DIRS = [
-    #r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\dataset_yolo_distilled",
-    # r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Test",
-    r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Training",
+    # os.path.join(repo_root, "data", "dataset_yolo_distilled"),
+    # os.path.join(repo_root, "data", "UNICT-VEDI_Dataset_bbox", "Test"),
+    os.path.join(repo_root, "data", "UNICT-VEDI_Dataset_bbox", "Training"),
 ]
 
 

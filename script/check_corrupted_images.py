@@ -6,8 +6,9 @@ from tqdm import tqdm
 # Disabilitiamo il tolleramento dei file troncati per fare una scansione rigorosa
 ImageFile.LOAD_TRUNCATED_IMAGES = False
 
-# Percorso principale del dataset
-DATASET_DIR = "../data/UNICT-VEDI_Dataset_bbox"
+# Percorso principale del dataset (risolto indipendentemente dalla cartella di lancio)
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATASET_DIR = os.path.join(repo_root, "data", "UNICT-VEDI_Dataset_bbox")
 
 
 def find_all_images(root_dir):

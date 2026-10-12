@@ -4,7 +4,8 @@ from pathlib import Path
 # ==============================================================================
 # CONFIGURAZIONE
 # ==============================================================================
-TARGET_DIR = Path(r"C:\Users\Workstation\PycharmProjects\ProgettoVEDI_DL\data\UNICT-VEDI_Dataset_bbox\Test")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+TARGET_DIR = REPO_ROOT / "data" / "UNICT-VEDI_Dataset_bbox" / "Test"
 
 # Se True: NON tocca nessun file su disco, stampa a video i dettagli delle conversioni
 DRY_RUN = False
